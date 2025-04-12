@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1040863455302",
+    "project_id": "moto-39a40",
+    "storage_bucket": "moto-39a40.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040863455302:android:d1f8f6039d7462c9528247",
+        "android_client_info": {
+          "package_name": "com.tesisforero.motosecure"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1040863455302-uf1sf3dcff4ajgpsjn67ognfm4draraq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7SOuWwn1G4Je5MZqp4V6Bcy83yC1rwug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040863455302-uf1sf3dcff4ajgpsjn67ognfm4draraq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
