@@ -1,7 +1,7 @@
-package com.tesisforero.motosecure.services
+package com.tesisforero.motosecure.services.Google.Rutas
 
-import com.tesisforero.motosecure.models.RouteRequest
-import com.tesisforero.motosecure.models.RouteResponse
+import com.tesisforero.motosecure.models.google.routes.RouteRequest
+import com.tesisforero.motosecure.models.google.routes.RouteResponse
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST

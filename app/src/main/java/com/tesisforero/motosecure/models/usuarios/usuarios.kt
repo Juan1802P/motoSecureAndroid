@@ -1,4 +1,4 @@
-package com.tesisforero.motosecure.models
+package com.tesisforero.motosecure.models.usuarios
 
 data class LoginRequest(
     val dni_usu: String,

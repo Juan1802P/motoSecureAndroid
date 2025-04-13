@@ -1,4 +1,4 @@
-package com.tesisforero.motosecure.models
+package com.tesisforero.motosecure.models.google.routes
 
 data class RouteResponse(
     val routes: List<Route>

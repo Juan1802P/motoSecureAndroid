@@ -3,7 +3,6 @@ package com.tesisforero.motosecure.ui
 import com.tesisforero.motosecure.viewmodel.usuario.LoginViewModel
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,10 +22,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tesisforero.motosecure.R
 import com.tesisforero.motosecure.ui.theme.emerald_dark
-import com.tesisforero.motosecure.viewmodel.usuario.ReniecViewModel
 
 
 class LoginActivity : ComponentActivity() {
@@ -66,36 +63,20 @@ fun LoginScreen(
     navigateToRegister: () -> Unit,
     navigateToPasswordRecovery: () -> Unit,
     navigateToHome: (String) -> Unit,
-    reniecViewModel: ReniecViewModel = viewModel(),
     viewModel: LoginViewModel
 ) {
     var dni by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) } // Estado de carga
-    var userName by remember { mutableStateOf("") }
     var isUserInfoFetched by remember { mutableStateOf(false) } // Indica si los datos de usuario se obtuvieron
-    var hasNavigated by remember { mutableStateOf(false) }
 
-    // Observa el resultado del login usando collectAsState
     val loginResult by viewModel.loginResult.collectAsState()
-    val reniecResponse = reniecViewModel.userInfo.collectAsState()
-
-    // 1. Espera a que reniecResponse tenga datos y actualiza userName
-    LaunchedEffect(reniecResponse.value) {
-        reniecResponse.value?.let {
-            Log.d("Primera Respuesta Reniec", "name: ${it.data.name}")
-            userName = it.data.name
-            isUserInfoFetched = true // Marca como obtenido el userName
-        }
-    }
 
 
-    // 2. Navega a la pantalla de inicio solo cuando ambos, login y userName, estén disponibles
+    // 2. Navega a la pantalla de inicio
     LaunchedEffect(loginResult, isUserInfoFetched) {
-        if (loginResult?.success == true && isUserInfoFetched && !hasNavigated) {
-            hasNavigated = true // Asegura que solo navegue una vez
-            Log.d(" Respuesta Login Reniec", "name: ${userName}")
-            navigateToHome(userName)
+        if (loginResult?.success == true) {
+            navigateToHome(dni)
         }
     }
 
@@ -159,7 +140,6 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         isLoading = true
-                        reniecViewModel.fetchUserInfo(dni)
                         viewModel.login(dni, password)
                     },
                     modifier = Modifier

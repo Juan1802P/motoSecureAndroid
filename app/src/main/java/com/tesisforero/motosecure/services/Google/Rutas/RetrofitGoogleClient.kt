@@ -1,5 +1,6 @@
-package com.tesisforero.motosecure.services
+package com.tesisforero.motosecure.services.Google.Rutas
 
+import com.tesisforero.motosecure.services.Google.Rutas.GoogleMapsApiService
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

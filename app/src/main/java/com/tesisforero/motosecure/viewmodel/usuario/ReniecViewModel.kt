@@ -3,9 +3,9 @@ package com.tesisforero.motosecure.viewmodel.usuario
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tesisforero.motosecure.models.DniRequest
-import com.tesisforero.motosecure.models.UserInfoResponse
-import com.tesisforero.motosecure.services.RetrofitClient
+import com.tesisforero.motosecure.models.usuarios.DniRequest
+import com.tesisforero.motosecure.models.usuarios.UserInfoResponse
+import com.tesisforero.motosecure.services.usuarios.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

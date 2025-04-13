@@ -11,6 +11,10 @@ android {
     namespace = "com.tesisforero.motosecure"
     compileSdk = 35
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.tesisforero.motosecure"
         minSdk = 26
@@ -19,7 +23,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "MAPS_API_KEY", "\"${project.properties["MAPS_API_KEY"]}\"")
+
+        buildConfigField(
+            "String",
+            "GOOGLE_MAPS_API_KEY",
+            "\"${project.findProperty("GOOGLE_MAPS_API_KEY")}\""
+        )
 
     }
 
@@ -111,6 +120,8 @@ dependencies {
     implementation ("com.google.maps.android:android-maps-utils:2.3.0")
     implementation ("com.google.android.libraries.places:places:3.3.0")
     implementation ("com.google.accompanist:accompanist-permissions:0.28.0")
+    implementation ("com.google.maps.android:maps-compose:2.0.0")
+    implementation ("com.google.android.gms:play-services-maps:17.0.0")
 
 
 }

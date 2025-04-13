@@ -2,12 +2,13 @@ package com.tesisforero.motosecure.viewmodel.google
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tesisforero.motosecure.models.LatLng
-import com.tesisforero.motosecure.models.Location
-import com.tesisforero.motosecure.models.OriginOrDestination
-import com.tesisforero.motosecure.models.RouteRequest
-import com.tesisforero.motosecure.services.GoogleMapsApiService
-import com.tesisforero.motosecure.services.RetrofitGoogleClient
+import com.tesisforero.motosecure.BuildConfig
+import com.tesisforero.motosecure.models.google.routes.LatLng
+import com.tesisforero.motosecure.models.google.routes.Location
+import com.tesisforero.motosecure.models.google.routes.OriginOrDestination
+import com.tesisforero.motosecure.models.google.routes.RouteRequest
+import com.tesisforero.motosecure.services.Google.Rutas.GoogleMapsApiService
+import com.tesisforero.motosecure.services.Google.Rutas.RetrofitGoogleClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,7 +23,7 @@ class RouteViewModel : ViewModel() {
     val isLoading: StateFlow<Boolean> = _isLoading
 
     private val apiService: GoogleMapsApiService =
-        RetrofitGoogleClient.getClient("AIzaSyD3W_DclkBMKm03SvHaJ150Q_uzypbMm-E")
+        RetrofitGoogleClient.getClient(BuildConfig.GOOGLE_MAPS_API_KEY)
 
     fun obtenerRuta(origenLat: Double, origenLng: Double, destinoLat: Double, destinoLng: Double) {
         viewModelScope.launch {

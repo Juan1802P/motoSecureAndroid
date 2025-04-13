@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewModelScope
-import com.tesisforero.motosecure.models.RegisterRequest
-import com.tesisforero.motosecure.models.RegisterResponse
-import com.tesisforero.motosecure.services.RetrofitClient
+import com.tesisforero.motosecure.models.usuarios.RegisterRequest
+import com.tesisforero.motosecure.models.usuarios.RegisterResponse
+import com.tesisforero.motosecure.services.usuarios.RetrofitClient
 import retrofit2.Response
 
 class RegisterViewModel: ViewModel() {

@@ -1,9 +1,9 @@
-package com.tesisforero.motosecure.services
+package com.tesisforero.motosecure.services.usuarios
 
-import com.tesisforero.motosecure.models.LoginRequest
-import com.tesisforero.motosecure.models.LoginResponse
-import com.tesisforero.motosecure.models.RegisterRequest
-import com.tesisforero.motosecure.models.RegisterResponse
+import com.tesisforero.motosecure.models.usuarios.LoginRequest
+import com.tesisforero.motosecure.models.usuarios.LoginResponse
+import com.tesisforero.motosecure.models.usuarios.RegisterRequest
+import com.tesisforero.motosecure.models.usuarios.RegisterResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

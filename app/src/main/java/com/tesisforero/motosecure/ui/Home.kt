@@ -23,36 +23,62 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
+import com.tesisforero.motosecure.BuildConfig
 import com.tesisforero.motosecure.R
+import com.tesisforero.motosecure.ui.components.PlaceAutoCompleteTextField
 import com.tesisforero.motosecure.ui.theme.emerald_dark
 import com.tesisforero.motosecure.viewmodel.google.RouteViewModel
+import com.tesisforero.motosecure.viewmodel.google.PlaceViewModel
+
 
 class HomeActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, BuildConfig.GOOGLE_MAPS_API_KEY)
+        }
 
         setContent {
             val userName = intent.getStringExtra("userName")
             Log.d("Datos de Login", "name: $userName")
-            HomeScreen(userName = userName?: "ERROR")
+            HomeScreen(userName = userName ?: "ERROR")
         }
     }
 }
 
-//
-
 @Composable
-fun HomeScreen(userName: String, viewModel: RouteViewModel = viewModel()) {
+fun HomeScreen(
+    userName: String,
+    viewModel: RouteViewModel = viewModel(),
+) {
 
-    var origen by remember { mutableStateOf("") }
-    var destino by remember { mutableStateOf("") }
 
     val routeViewModel: RouteViewModel = viewModel()
     val tiempoEstimado by routeViewModel.tiempoEstimado.collectAsState()
 
+    val origenViewModel = remember { PlaceViewModel() }
+    val destinoViewModel = remember { PlaceViewModel() }
+    var origenLatLng by remember { mutableStateOf<LatLng?>(null) }
+    var destinoLatLng by remember { mutableStateOf<LatLng?>(null) }
+
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        origenViewModel.initPlaces(context)
+        destinoViewModel.initPlaces(context)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Parte superior 1/4 color verde
@@ -67,7 +93,7 @@ fun HomeScreen(userName: String, viewModel: RouteViewModel = viewModel()) {
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(top = 50.dp)
-            ){
+            ) {
                 Text(
                     text = "¡Bienvenido $userName!",
                     color = Color.White,
@@ -91,7 +117,7 @@ fun HomeScreen(userName: String, viewModel: RouteViewModel = viewModel()) {
             )
         }
 
-        // Parte intermedia blanca con campos de texto
+        // Parte intermedia blanca
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -102,75 +128,76 @@ fun HomeScreen(userName: String, viewModel: RouteViewModel = viewModel()) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Spacer(modifier = Modifier.height(50.dp))
 
-                // Campo Origen
-                OutlinedTextField(
-                    value = origen,
-                    onValueChange = { origen = it },
-                    label = { Text("Origen") },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-                )
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)) {
 
-                // Campo Destino
-                OutlinedTextField(
-                    value = destino,
-                    onValueChange = { destino = it },
-                    label = { Text("Destino") },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-                )
+                    // Campo de ORIGEN
 
-                Spacer(modifier = Modifier.height(25.dp))
+                    PlaceAutoCompleteTextField(
+                        label = "Origen",
+                        viewModel = origenViewModel,
+                        onPlaceSelected = { latLng ->
+                            origenLatLng = latLng
+                            Log.d("Origen", "LatLng: $latLng")
+                        }
+                    )
 
-                // Etiqueta Tiempo Estimado
-                Text(
-                    text = "Datos del Viaje: $tiempoEstimado",
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(25.dp))
+                    // Campo de DESTINO
+                    PlaceAutoCompleteTextField(
+                        label = "Destino",
+                        viewModel = destinoViewModel,
+                        onPlaceSelected = { latLng ->
+                            destinoLatLng = latLng
+                            Log.d("Destino", "LatLng: $latLng")
+                        }
+                    )
 
-                // Botón Verificar Datos
-                Button(
-                    onClick = {
-                       try{
-                           val geocoder = Geocoder(context)
-                           val origenList = geocoder.getFromLocationName(origen, 1)
-                           val destinoList = geocoder.getFromLocationName(destino, 1)
+                    Spacer(modifier = Modifier.height(25.dp))
 
-                           if (!origenList.isNullOrEmpty() && !destinoList.isNullOrEmpty()) {
-                               val origenLatLng = origenList[0]
-                               val destinoLatLng = destinoList[0]
+                    // Etiqueta Tiempo Estimado
+                    Text(
+                        text = tiempoEstimado,
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
 
-                               Log.d("Geocoding", "Origen: ${origenLatLng.latitude}, ${origenLatLng.longitude}")
-                               Log.d("Geocoding", "Destino: ${destinoLatLng.latitude}, ${destinoLatLng.longitude}")
+                    Spacer(modifier = Modifier.height(25.dp))
 
-                               viewModel.obtenerRuta(
-                                   origenLat = origenLatLng.latitude,
-                                   origenLng = origenLatLng.longitude,
-                                   destinoLat = destinoLatLng.latitude,
-                                   destinoLng = destinoLatLng.longitude
-                               )
-                           } else {
-                               Log.e("Geocoding", "Dirección no encontrada")
-                           }
-
-                       }catch (e: Exception){
-                           Log.e("Geocoding", "Error al obtener coordenadas: ${e.message}")
-                       }
-
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = emerald_dark)
-                ) {
-                    Text(text = "Siguente", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    // Botón Verificar Datos
+                    Button(
+                        onClick = {
+                            if (origenLatLng != null && destinoLatLng != null) {
+                                viewModel.obtenerRuta(
+                                    origenLat = origenLatLng!!.latitude,
+                                    origenLng = origenLatLng!!.longitude,
+                                    destinoLat = destinoLatLng!!.latitude,
+                                    destinoLng = destinoLatLng!!.longitude
+                                )
+                            } else {
+                                Log.e("Ruta", "Faltan coordenadas de origen o destino")
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = emerald_dark)
+                    ) {
+                        Text(
+                            text = "Siguiente",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
 
-        // Franja verde en la parte inferior con iconos
+        // Barra inferior con íconos
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -186,19 +213,19 @@ fun HomeScreen(userName: String, viewModel: RouteViewModel = viewModel()) {
             ) {
                 Icon(
                     imageVector = Icons.Default.StackedLineChart,
-                    contentDescription = "Perfil",
+                    contentDescription = "Estadísticas",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
                 )
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    contentDescription = "Configuración",
+                    contentDescription = "Notificaciones",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
                 )
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Notificaciones",
+                    contentDescription = "Perfil",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
                 )
@@ -206,7 +233,6 @@ fun HomeScreen(userName: String, viewModel: RouteViewModel = viewModel()) {
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

@@ -1,5 +1,6 @@
-package com.tesisforero.motosecure.services
+package com.tesisforero.motosecure.services.usuarios
 
+import com.tesisforero.motosecure.services.ApiReniecService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

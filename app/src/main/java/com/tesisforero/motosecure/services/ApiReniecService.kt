@@ -1,7 +1,7 @@
 package com.tesisforero.motosecure.services
 
-import com.tesisforero.motosecure.models.DniRequest
-import com.tesisforero.motosecure.models.UserInfoResponse
+import com.tesisforero.motosecure.models.usuarios.DniRequest
+import com.tesisforero.motosecure.models.usuarios.UserInfoResponse
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
