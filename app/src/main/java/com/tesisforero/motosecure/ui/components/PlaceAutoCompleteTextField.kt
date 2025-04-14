@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,8 +24,11 @@ fun PlaceAutoCompleteTextField(
     viewModel: PlaceViewModel,
     onPlaceSelected: (LatLng) -> Unit
 ) {
-    var query by remember {mutableStateOf("")}
+    var query by remember { mutableStateOf("") }
     var showSuggestions by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+
+    val selectedLatLng by viewModel.selectedLatLng.collectAsState()
 
     Column {
         OutlinedTextField(
@@ -32,13 +36,21 @@ fun PlaceAutoCompleteTextField(
             onValueChange = {
                 query = it
                 showSuggestions = true
-                viewModel.searchPlaces(query)
+                viewModel.onQueryChanged(query)
             },
-            label = { Text(label) }
+            label = { Text(label) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .clickable { showSuggestions = true } // vuelve a mostrar si se toca
         )
 
         if (showSuggestions && viewModel.suggestions.isNotEmpty()) {
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            ) {
                 items(viewModel.suggestions.size) { index ->
                     val prediction = viewModel.suggestions[index]
                     Text(
@@ -48,20 +60,33 @@ fun PlaceAutoCompleteTextField(
                             .clickable {
                                 query = prediction.getFullText(null).toString()
                                 showSuggestions = false
+                                focusManager.clearFocus() // cierra teclado y desactiva foco
                                 viewModel.fetchPlaceDetails(prediction.placeId)
                             }
-                            .padding(8.dp)
+                            .padding(8.dp),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Black
                     )
                 }
             }
         }
 
-
-
-        LaunchedEffect(viewModel.selectedLatLng.collectAsState().value) {
-            viewModel.selectedLatLng.value?.let {
+        // Se lanza cuando cambia la ubicación seleccionada
+        LaunchedEffect(selectedLatLng) {
+            selectedLatLng?.let {
                 onPlaceSelected(it)
             }
+        }
+
+        // Dismiss automático si se pierde el foco
+        LaunchedEffect(Unit) {
+            snapshotFlow { query }
+                .collect {
+                    if (it.isBlank()) {
+                        showSuggestions = false
+                    }
+                }
         }
     }
 }

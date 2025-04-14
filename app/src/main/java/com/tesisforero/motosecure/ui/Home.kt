@@ -23,19 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.tesisforero.motosecure.BuildConfig
 import com.tesisforero.motosecure.R
+import com.tesisforero.motosecure.ui.components.GoogleMapView
 import com.tesisforero.motosecure.ui.components.PlaceAutoCompleteTextField
 import com.tesisforero.motosecure.ui.theme.emerald_dark
 import com.tesisforero.motosecure.viewmodel.google.RouteViewModel
@@ -126,7 +119,6 @@ fun HomeScreen(
                 .padding(24.dp)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.height(50.dp))
 
                 Column(modifier = Modifier
                     .fillMaxSize()
@@ -167,19 +159,30 @@ fun HomeScreen(
 
                     Spacer(modifier = Modifier.height(25.dp))
 
+                    // Mostrar el mapa aquí
+                    if (origenLatLng != null && destinoLatLng != null) {
+
+                        if (origenLatLng != null && destinoLatLng != null) {
+                            viewModel.obtenerRuta(
+                                origenLat = origenLatLng!!.latitude,
+                                origenLng = origenLatLng!!.longitude,
+                                destinoLat = destinoLatLng!!.latitude,
+                                destinoLng = destinoLatLng!!.longitude
+                            )
+                        } else {
+                            Log.e("Ruta", "Faltan coordenadas de origen o destino")
+                        }
+
+                        GoogleMapView(
+                            origenLatLng = origenLatLng,
+                            destinoLatLng = destinoLatLng
+                        )
+                    }
+
                     // Botón Verificar Datos
                     Button(
                         onClick = {
-                            if (origenLatLng != null && destinoLatLng != null) {
-                                viewModel.obtenerRuta(
-                                    origenLat = origenLatLng!!.latitude,
-                                    origenLng = origenLatLng!!.longitude,
-                                    destinoLat = destinoLatLng!!.latitude,
-                                    destinoLng = destinoLatLng!!.longitude
-                                )
-                            } else {
-                                Log.e("Ruta", "Faltan coordenadas de origen o destino")
-                            }
+
                         },
                         modifier = Modifier
                             .fillMaxWidth()
