@@ -1,6 +1,6 @@
 package com.tesisforero.motosecure.ui
 
-import android.location.Geocoder
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -40,21 +40,31 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         if (!Places.isInitialized()) {
-            Places.initialize(applicationContext, BuildConfig.GOOGLE_MAPS_API_KEY)
+            Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
         }
 
         setContent {
             val userName = intent.getStringExtra("userName")
             Log.d("Datos de Login", "name: $userName")
-            HomeScreen(userName = userName ?: "ERROR")
+            HomeScreen(
+                userName = userName ?: "ERROR",
+                navigateToSafeDates = {navigateToSafeDates()}
+            )
+
         }
     }
+
+    private fun navigateToSafeDates() {
+        startActivity(Intent(this, RegisterActivity::class.java))
+    }
 }
+
 
 @Composable
 fun HomeScreen(
     userName: String,
-    viewModel: RouteViewModel = viewModel(),
+    //viewModel: RouteViewModel = viewModel(),
+    navigateToSafeDates: ()-> Unit
 ) {
 
 
@@ -116,7 +126,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .weight(3f)
                 .background(Color.White)
-                .padding(24.dp)
+                .padding(10.dp)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
@@ -162,7 +172,7 @@ fun HomeScreen(
                     // Mostrar el mapa aquí
                     if (origenLatLng != null && destinoLatLng != null) {
 
-                        if (origenLatLng != null && destinoLatLng != null) {
+                        /*if (origenLatLng != null && destinoLatLng != null) {
                             viewModel.obtenerRuta(
                                 origenLat = origenLatLng!!.latitude,
                                 origenLng = origenLatLng!!.longitude,
@@ -171,7 +181,7 @@ fun HomeScreen(
                             )
                         } else {
                             Log.e("Ruta", "Faltan coordenadas de origen o destino")
-                        }
+                        }*/
 
                         GoogleMapView(
                             origenLatLng = origenLatLng,
@@ -182,7 +192,7 @@ fun HomeScreen(
                     // Botón Verificar Datos
                     Button(
                         onClick = {
-
+                            navigateToSafeDates()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -240,5 +250,5 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun PreviewHomeScreen() {
-    HomeScreen(userName = "JUAN")
+    HomeScreen(userName = "JUAN", navigateToSafeDates = {})
 }

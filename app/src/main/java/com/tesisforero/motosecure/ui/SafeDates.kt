@@ -1,6 +1,7 @@
 package com.tesisforero.motosecure.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -28,10 +29,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.tesisforero.motosecure.ui.theme.emerald_dark
 
 
@@ -49,7 +52,6 @@ fun SafeDatesScreen() {
 
     var dni by remember { mutableStateOf("") }
     var nombres by remember { mutableStateOf("") }
-    var apellidos by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
     var licencia by remember { mutableStateOf("") }
 
@@ -58,7 +60,8 @@ fun SafeDatesScreen() {
     var color by remember { mutableStateOf("") }
     var asociacion by remember { mutableStateOf("") }
 
-    var tablaBusqueda by remember { mutableStateOf("") }
+    var onclickSearch by remember { mutableStateOf(false)}
+    val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -85,9 +88,9 @@ fun SafeDatesScreen() {
 
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
-                        value = dni,
-                        onValueChange = { dni = it },
-                        label = { Text("DNI", color = Color.White) },
+                        value = placa,
+                        onValueChange = { placa = it },
+                        label = { Text("placa", color = Color.White) },
                         modifier = Modifier.weight(1f),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color.White,
@@ -99,7 +102,7 @@ fun SafeDatesScreen() {
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = {
-
+                            onclickSearch = true
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                         shape = RoundedCornerShape(8.dp)
@@ -122,8 +125,7 @@ fun SafeDatesScreen() {
                 Text("Chofer", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = emerald_dark)
                 Spacer(modifier = Modifier.height(8.dp))
                 LabelItem("DNI", dni)
-                LabelItem("Nombres", nombres)
-                LabelItem("Apellidos", apellidos)
+                LabelItem("Chofer", nombres)
                 LabelItem("Teléfono", telefono)
                 LabelItem("Licencia", licencia)
 
@@ -140,7 +142,11 @@ fun SafeDatesScreen() {
 
                 Button(
                     onClick = {
-                        // Lógica para iniciar viaje
+                        if(onclickSearch){
+
+                        }else{
+                            Toast.makeText(context, "Debes realziar la verificacion de seguridad ", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()

@@ -29,7 +29,7 @@ import com.tesisforero.motosecure.ui.theme.emerald_dark
 class LoginActivity : ComponentActivity() {
 
     private val viewModel: LoginViewModel by viewModels()  // Obtener el ViewModel
-    private var userName: String = ""
+    private var dniUser: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class LoginActivity : ComponentActivity() {
             LoginScreen(
                 navigateToRegister = { navigateToRegister() },
                 navigateToPasswordRecovery = { navigateToPasswordRecovery() },
-                navigateToHome = { navigateToHome(userName) },
+                navigateToHome = { navigateToHome(dniUser) },
                 viewModel = viewModel  // Pasa el ViewModel a la pantalla
             )
         }
@@ -51,9 +51,9 @@ class LoginActivity : ComponentActivity() {
         startActivity(Intent(this, PasswordRecoveryActivity::class.java))
     }
 
-    private fun navigateToHome(userName: String){
+    private fun navigateToHome(dniUser: String){
         val intent = Intent(this, HomeActivity::class.java)
-        intent.putExtra("userName", userName)
+        intent.putExtra("dniUser", dniUser)
         startActivity(intent)
     }
 }
@@ -73,7 +73,7 @@ fun LoginScreen(
     val loginResult by viewModel.loginResult.collectAsState()
 
 
-    // 2. Navega a la pantalla de inicio
+    // Navega a la pantalla de inicio
     LaunchedEffect(loginResult, isUserInfoFetched) {
         if (loginResult?.success == true) {
             navigateToHome(dni)

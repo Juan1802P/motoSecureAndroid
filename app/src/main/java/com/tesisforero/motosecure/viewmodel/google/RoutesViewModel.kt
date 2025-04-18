@@ -23,7 +23,7 @@ class RouteViewModel : ViewModel() {
     val isLoading: StateFlow<Boolean> = _isLoading
 
     private val apiService: GoogleMapsApiService =
-        RetrofitGoogleClient.getClient(BuildConfig.GOOGLE_MAPS_API_KEY)
+        RetrofitGoogleClient.getClient(BuildConfig.MAPS_API_KEY)
 
     fun obtenerRuta(origenLat: Double, origenLng: Double, destinoLat: Double, destinoLng: Double) {
         viewModelScope.launch {
