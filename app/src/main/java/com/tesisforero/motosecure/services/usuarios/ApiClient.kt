@@ -1,17 +1,41 @@
 package com.tesisforero.motosecure.services.usuarios
 
-import com.tesisforero.motosecure.models.usuarios.LoginRequest
-import com.tesisforero.motosecure.models.usuarios.LoginResponse
-import com.tesisforero.motosecure.models.usuarios.RegisterRequest
-import com.tesisforero.motosecure.models.usuarios.RegisterResponse
-import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.POST
+import com.tesisforero.motosecure.services.ApiReniecService
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-interface ApiService {
-    @POST("/login/")
-    suspend fun login(@Body credentials: LoginRequest): Response<LoginResponse>
+object RetrofitClient {
 
-    @POST("/create/")
-    suspend fun  create(@Body credentials: RegisterRequest): Response<RegisterResponse>
+    private const val BASE_URL_LOCAL = "http://192.168.18.29:8000"
+    private const val BASE_URL_EXTERNAL = "https://api.consultasperu.com/api/v1/"
+
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .build()
+
+    // Retrofit para tu API local
+    private val retrofitLocal = Retrofit.Builder()
+        .baseUrl(BASE_URL_LOCAL)
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    // Retrofit para la API externa (consulta DNI)
+    private val retrofitExternal = Retrofit.Builder()
+        .baseUrl(BASE_URL_EXTERNAL)
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    // Servicio para mis APIs
+    val apiService: ApiService = retrofitLocal.create(ApiService::class.java)
+
+    // Servicio para la consulta de DNI
+    val externalApiService: ApiReniecService = retrofitExternal.create(ApiReniecService::class.java)
 }

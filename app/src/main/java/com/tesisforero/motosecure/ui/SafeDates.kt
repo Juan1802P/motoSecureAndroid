@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,34 +35,58 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tesisforero.motosecure.ui.theme.emerald_dark
+import com.tesisforero.motosecure.viewmodel.vehiculo.vehiculoInfoViewModel
+import kotlin.getValue
 
 
 class SafeDates : ComponentActivity(){
+
+    private val viewModel: vehiculoInfoViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SafeDatesScreen()
+            SafeDatesScreen(
+            )
         }
     }
 }
 
 @Composable
-fun SafeDatesScreen() {
+fun SafeDatesScreen(
+    vehiculoViewModel: vehiculoInfoViewModel = viewModel()
+) {
+
+    var placa by remember { mutableStateOf("") }
+    var onclickSearch by remember { mutableStateOf(false)}
+    val context = LocalContext.current
 
     var dni by remember { mutableStateOf("") }
     var nombres by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
     var licencia by remember { mutableStateOf("") }
-
-    var placa by remember { mutableStateOf("") }
-    var modelo by remember { mutableStateOf("") }
+    var modelo  by remember { mutableStateOf("") }
     var color by remember { mutableStateOf("") }
     var asociacion by remember { mutableStateOf("") }
 
-    var onclickSearch by remember { mutableStateOf(false)}
-    val context = LocalContext.current
+    val vehiculoInfoResponse = vehiculoViewModel.vehiculoInfo.collectAsState()
+    val isLoading = vehiculoViewModel.isLoading.collectAsState()
+
+    LaunchedEffect(vehiculoInfoResponse.value) {
+        vehiculoInfoResponse.value?.let{
+            dni = it.dni_cho.toString()
+            nombres = it.full_name.toString()
+            telefono = it.phone_cho.toString()
+            licencia = it.licencia_cho.toString()
+            modelo = it.modelo_veh.toString()
+            color = it.color_veh.toString()
+            asociacion = it.asociacion_veh.toString()
+
+        }
+    }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -103,6 +128,7 @@ fun SafeDatesScreen() {
                     Button(
                         onClick = {
                             onclickSearch = true
+                            vehiculoViewModel.fetchVehiculoInfo(placa)
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                         shape = RoundedCornerShape(8.dp)

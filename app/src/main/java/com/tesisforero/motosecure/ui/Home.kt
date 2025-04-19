@@ -55,7 +55,7 @@ class HomeActivity : ComponentActivity() {
     }
 
     private fun navigateToSafeDates() {
-        startActivity(Intent(this, RegisterActivity::class.java))
+        startActivity(Intent(this, SafeDates::class.java))
     }
 }
 
